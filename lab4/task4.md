@@ -50,3 +50,20 @@ usecase "Calculate Total Credits" as UC_CalculateCredits
     usecase "Report by Specialization" as UC_ReportBySpecialization
   }
 }
+
+```md
+UC_NotifyMissing ..> UC_VerifySpecialization : <<extend>>
+UC_RecommendCourses ..> UC_TrackProgress : <<extend>>
+
+UC_ReportByField --|> UC_GenerateReport
+UC_ReportBySpecialization --|> UC_GenerateReport
+
+legend right
+  -- Association
+  ..> <<include>> Mandatory reused behavior
+  ..> <<extend>> Optional or conditional behavior
+  --|> Generalization
+endlegend
+
+@enduml
+```
