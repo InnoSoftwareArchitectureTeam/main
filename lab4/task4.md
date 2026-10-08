@@ -51,7 +51,33 @@ usecase "Calculate Total Credits" as UC_CalculateCredits
   }
 }
 
-```md
+User -- UC_Authenticate
+
+Student -- UC_BrowseCourses
+Student -- UC_AddCourse
+Student -- UC_RemoveCourse
+Student -- UC_SelectSpecialization
+Student -- UC_AllocateBudget
+Student -- UC_ComparePlan
+Student -- UC_ViewMarks
+Student -- UC_TrackProgress
+
+Lecturer -- UC_AssignMarks
+
+AcademicOffice -- UC_ManageModel
+AcademicOffice -- UC_GenerateReport
+
+UC_BrowseCourses ..> UC_ViewCourse : <<include>>
+UC_BrowseCourses ..> UC_FilterCourses : <<include>>
+UC_AddCourse ..> UC_ValidatePlan : <<include>>
+UC_SelectSpecialization ..> UC_VerifySpecialization : <<include>>
+UC_ValidatePlan ..> UC_CheckPrerequisites : <<include>>
+UC_ValidatePlan ..> UC_VerifySpecialization : <<include>>
+UC_ValidatePlan ..> UC_CalculateCredits : <<include>>
+UC_AllocateBudget ..> UC_CalculateCost : <<include>>
+UC_ManageModel ..> UC_DefineModelCourses : <<include>>
+UC_TrackProgress ..> UC_CalculateCredits : <<include>>
+
 UC_NotifyMissing ..> UC_VerifySpecialization : <<extend>>
 UC_RecommendCourses ..> UC_TrackProgress : <<extend>>
 
@@ -66,4 +92,3 @@ legend right
 endlegend
 
 @enduml
-```
