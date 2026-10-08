@@ -30,3 +30,23 @@ rectangle "InPlan System" {
     usecase "Validate Study Plan" as UC_ValidatePlan
     usecase "Check Course Prerequisites" as UC_CheckPrerequisites
     usecase "Verify Specialization\nRequirements" as UC_VerifySpecialization
+
+usecase "Calculate Total Credits" as UC_CalculateCredits
+    usecase "Calculate Total Cost" as UC_CalculateCost
+    usecase "Allocate Credit Budget" as UC_AllocateBudget
+    usecase "Compare with Model\nStudy Programme" as UC_ComparePlan
+    usecase "Recommend Additional Courses" as UC_RecommendCourses
+    usecase "Notify about Missing\nRequirements" as UC_NotifyMissing
+  }
+
+  package "Academic Administration and Reporting" {
+    usecase "Manage Model Study Programme" as UC_ManageModel
+    usecase "Define Courses in\nModel Programme" as UC_DefineModelCourses
+    usecase "Assign Marks" as UC_AssignMarks
+    usecase "View Marks" as UC_ViewMarks
+    usecase "Track Academic Progress" as UC_TrackProgress
+    usecase "Generate Academic\nPerformance Report" as UC_GenerateReport
+    usecase "Report by Field of Study" as UC_ReportByField
+    usecase "Report by Specialization" as UC_ReportBySpecialization
+  }
+}
