@@ -120,10 +120,49 @@ For performance requirements NFR-11–NFR-13, first agree on representative data
 | --- | --- |
 | **Kanban** | A credible option, especially for later maintenance with unpredictable incoming requests. For the assumed initial course project, Scrum's explicit goals and scheduled reviews provide useful coordination and feedback. Kanban could also provide a review cadence, but the team would need to define that arrangement itself. |
 | **Extreme Programming (XP)** | Its testing, integration, and collaboration practices are useful for reliable academic calculations. Scrum provides our primary structure for stakeholder priorities and delivery; selected XP practices strengthen implementation. The repository does not establish that the team can sustain all XP practices, such as an on-site customer. |
-| **A heavily tailored Unified Process** | Architecture and traceability are valuable, but a large set of roles and formal documents would consume a substantial share of the assumed small team's capacity. Keep the artifacts needed to explain decisions and verify behaviour, without introducing a process structure unsupported by the project's scale. |
+| **Rational Unified Process (RUP)** | Its iterative, architecture-focused approach and requirements traceability are useful for InPlan's connected academic rules. RUP can be tailored to a small team, but selecting and maintaining the necessary roles and artifacts adds process setup. Our proposed Scrum arrangement retains explicit requirements and design decisions with fewer prescribed responsibilities. |
+| **Microsoft's Synch-and-Stabilize process (MSS)** | MSS combines planning, development, and stabilization with frequent synchronization and milestone releases. Its program manager, developer, and tester roles coordinate interdependent features; developer–tester pairs provide independent checks. This is useful for keeping plans, credits, marks, and reports consistent. However, the staffing and milestone structure described by Rockwood would need adaptation for our assumed 4–6-person team. We adopt continuous integration and stabilization checks without adopting the full MSS organization. |
+| **Team Software Process (TSP)** | TSP builds on the Personal Software Process (PSP), using iterative cycles, explicit roles, process scripts, plans, reviews, and measurement. Rockwood describes its academic variant, TSPi, where members combine development with team leadership, development, planning, quality/process, and support responsibilities. It is a credible fit for a small novice team and could improve defect prevention and estimation. For InPlan, adopting its detailed scripts, records, and process training would require capacity beyond our proposed Scrum routine. Prefer TSP if learning a disciplined engineering process or collecting reliable process measurements becomes a primary project objective. |
+
+The MSS and TSP descriptions follow Justin Rockwood's *Choose Your Weapon Wisely*, Sections 2.3–2.4, printed pp. 7–15 (PDF pages 15–23 in the supplied document). MSS here means **Microsoft's Synch-and-Stabilize**, which the paper distinguishes from Microsoft Solutions Framework (MSF).
 
 ### Conditions and limitations
 
 The recommendation depends on regular feedback, a manageable team size, and authority to adjust backlog priorities. If academic staff are unavailable, record unresolved rules and seek proxy feedback without presenting it as university approval. If the team cannot maintain the core Scrum events and accountabilities, a simpler Kanban process would be a more honest and practical choice. If deployment introduces strict approval gates or major integration risks, add the necessary release controls and reassess the life cycle assumptions.
 
 With the stated assumptions, iterative and incremental development addresses InPlan's evolving academic rules and connected workflows, while Scrum gives the team a concrete way to prioritize and inspect progress. Testing, traceable decisions, and incremental integration make the approach suitable for a system where incorrect plans, budgets, or marks would directly affect users.
+
+## 3. Completed Rockwood process selection table
+
+This completes the **Appendix A — Question Tally Sheet** from Justin Rockwood's *Choose Your Weapon Wisely*, Carnegie Mellon University, using the supplied PDF. The blank table is on printed p. 35 (PDF page 43); its scoring matrices are in Sections 3.1–3.4, printed pp. 23–33. The columns compare RUP, MSS, TSP, XP, and Scrum. Kanban is discussed above but is not part of this questionnaire.
+
+Rockwood assigns **1 for a relative weakness, 2 for a neutral fit, and 3 for a relative strength** under the selected answer. Each table row below uses the corresponding matrix unchanged. Totals are simple column sums over all 11 questions, with a maximum of 33; we introduce no additional criterion weights.
+
+The answers describe a **provisional InPlan pilot scenario**, not a survey of the actual team. Staffing, code size, experience percentages, and organizational preferences are not recorded in the repository. In particular, basic programming skills do not establish the paper's definition of experience: prior work in the technology domain, similar systems, and communication skills. We conservatively use the novice category until that experience is confirmed.
+
+| Question | Selected answer and InPlan rationale | RUP | MSS | TSP | XP | Scrum | Matrix page |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Team Size | **a — Fewer than 10.** The assumed single team has 4–6 members, including development and testing responsibilities. | 1 | 1 | 3 | 3 | 3 | 23 |
+| Total Developers | **a — Fewer than 40.** The same small team develops the whole pilot; no additional teams are assumed. | 2 | 2 | 2 | 2 | 2 | 24 |
+| Product Size and Complexity | **a — Small product, hundreds to a few thousand lines.** Assume a limited pilot implementation for this scoring scenario. This is not a code-size estimate derived from the requirement count. | 1 | 1 | 1 | 3 | 3 | 25 |
+| Competent and Experienced Developers | **a — Below 10%.** Conservatively assume no confirmed member meets all three experience conditions in Rockwood's question. The actual percentage needs verification. | 1 | 1 | 3 | 1 | 1 | 26 |
+| Level of Hacker Sentiment | **b — Plan enough before coding.** Clarify roles, data relationships, and critical academic rules, then learn from working increments instead of exhaustively designing every detail first. | 2 | 2 | 1 | 2 | 2 | 27 |
+| Management Style | **a — Macro-management.** Assume the team chooses implementation details within agreed goals and constraints, without a manager prescribing each development step. | 2 | 3 | 1 | 3 | 3 | 28 |
+| Organization-Wide Processes | **b — Somewhat important.** Assume the team needs continuity and documented decisions, but no organization-wide process standardization programme. | 2 | 2 | 2 | 2 | 2 | 29 |
+| New Process Adoption | **b — A reasonably mature process is sufficient.** The pilot has no stated requirement for adoption evidence across many market segments. | 2 | 2 | 2 | 2 | 2 | 30 |
+| Type of Product | **d — Neither life- nor mission-critical application.** Score the proposed educational pilot, not an established university production system on which operations already depend. Academic-data correctness still matters. | 2 | 2 | 2 | 2 | 2 | 31 |
+| Requirements Stability | **a — Emergent/changing.** For the pilot, assume stakeholder feedback can materially revise the unanswered academic rules and workflows identified in Lab 2. The repository does not establish an actual change rate. | 2 | 2 | 2 | 3 | 3 | 32 |
+| Requirements Traceability | **b — Somewhat important.** FR/NFR identifiers must connect promised behaviour to implementation and acceptance evidence; no formal certification requirement is stated. | 2 | 2 | 2 | 1 | 1 | 33 |
+| **Totals** | **Unweighted sum of the 11 matrix rows** | **19** | **20** | **21** | **24** | **24** | — |
+
+Page numbers in the final column are the document's printed page numbers; add 8 to obtain the PDF viewer page. For traceability, the answer letters follow the matrix on p. 33: the explanatory bullets beneath it are mislabelled c/d/e rather than a/b/c.
+
+### Interpretation for InPlan
+
+**XP and Scrum tie at 24**, followed by TSP at 21, MSS at 20, and RUP at 19. The table supports considering both agile approaches; it does not establish Scrum as a unique numerical winner. We retain Scrum for organizing stakeholder priorities and integrated delivery, complemented by XP practices for testing, integration, and shared code ownership. This is a project-specific choice between the tied candidates.
+
+The weak scores for Scrum and XP on **experience** and **traceability** identify work the team must address. Guided reviews and paired work on unfamiliar areas can support less experienced members, while links between requirements, backlog items, changes, and acceptance checks preserve traceability. These practices do not change the paper's scores or prove that the team already has the necessary experience. TSP remains a serious alternative because its explicit guidance directly addresses novice-team needs.
+
+The ranking is sensitive to assumptions. If product size instead falls into **category b** and management needs **category b** structure, replacing just those two rows gives **RUP 21, MSS 21, TSP 23, XP 22, and Scrum 22**. TSP then leads. Actual scope and the team's ability to self-manage should therefore be checked before treating the provisional recommendation as a firm decision.
+
+Finally, this is the paper's historical scoring model, not a current benchmark or a probability of project success. We preserve it for the assignment without adopting its historical statements about process maturity, scaling limits, or Scrum artifacts as present-day rules. The proposed Scrum operation in Section 2 follows the linked Scrum Guide; the completed questionnaire provides additional evidence and exposes assumptions rather than replacing project judgment.
