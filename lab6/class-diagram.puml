@@ -1,0 +1,256 @@
+@startuml InPlan_Class_Diagram
+title InPlan — Detailed Class Diagram
+caption Proposed design based on Lab 3 requirements and Lab 4 use cases
+
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam nodesep 45
+skinparam ranksep 65
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 13
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #334155
+skinparam ArrowColor #475569
+skinparam packageBorderColor #94A3B8
+hide circle
+
+package "Identity and roles" #EFF6FF {
+  abstract class User {
+    -id : UUID
+    -fullName : String
+    -email : String
+    -passwordHash : String
+    -active : Boolean
+    +authenticate(in password : String) : Boolean
+    +updateContact(in email : String) : void
+    {abstract} +hasPermission(in action : String) : Boolean
+  }
+
+  class Student {
+    -studentNumber : String
+    -admissionYear : Integer
+    +createStudyPlan(in name : String) : StudyPlan
+    +viewMarks(in semester : String) : List<Mark>
+    +viewProgress(in specialization : Specialization) : AcademicProgress
+  }
+
+  class Lecturer {
+    -employeeNumber : String
+    -department : String
+    +canGrade(in course : Course) : Boolean
+    +assignMark(in enrollment : Enrollment, in value : Decimal) : Mark
+    +reviseMark(in mark : Mark, in value : Decimal) : void
+  }
+
+  class AcademicOfficeEmployee {
+    -employeeNumber : String
+    -officeName : String
+    +createProgramme(in name : String, in spec : Specialization) : ModelStudyProgramme
+    +requestReport(in field : FieldOfStudy) : AcademicReport
+    +requestReport(in spec : Specialization) : AcademicReport
+  }
+}
+
+package "Academic catalogue" #F0FDF4 {
+  class FieldOfStudy {
+    -id : UUID
+    -name : String
+    -description : String
+    +rename(in name : String) : void
+    +listCourses(in availableOnly : Boolean) : List<Course>
+  }
+
+  class Course {
+    -id : UUID
+    -code : String
+    -title : String
+    -academicCredits : Integer
+    -cost : Decimal
+    -available : Boolean
+    +updateDetails(in title : String, in credits : Integer, in cost : Decimal) : void
+    +addPrerequisite(in prerequisite : Course) : void
+    +prerequisitesMet(in student : Student) : Boolean
+  }
+
+  class CourseCatalogue {
+    -catalogueId : UUID
+    -updatedAt : DateTime
+    +findById(in courseId : UUID) : Course [0..1]
+    +filter(in field : FieldOfStudy [0..1], in credits : Integer [0..1], in spec : Specialization [0..1]) : List<Course>
+  }
+
+  class Specialization {
+    -id : UUID
+    -name : String
+    -requiredCredits : Integer
+    +addCoreCourse(in course : Course) : void
+    +missingCoreCourses(in selected : Set<Course>) : Set<Course>
+    +accepts(in course : Course) : Boolean
+  }
+
+  class ModelStudyProgramme {
+    -id : UUID
+    -name : String
+    -academicYear : String
+    +addCourse(in course : Course) : void
+    +removeCourse(in course : Course) : void
+    +compareWith(in plan : StudyPlan) : Set<Course>
+  }
+}
+
+package "Study planning and budget" #FFF7ED {
+  class StudyPlan {
+    -id : UUID
+    -name : String
+    -status : String
+    -createdAt : DateTime
+    +selectSpecialization(in spec : Specialization) : void
+    +addCourse(in course : Course, in semester : String) : PlanItem
+    +removeCourse(in itemId : UUID) : void
+    +allocateBudget(in item : PlanItem, in amount : Decimal) : Boolean
+    +totalCredits() : Integer
+    +totalCost() : Decimal
+    +confirm(in actor : Student, out result : ValidationResult) : Boolean
+  }
+
+  class PlanItem {
+    -id : UUID
+    -semester : String
+    -allocatedAmount : Decimal
+    ~setAllocation(in amount : Decimal) : void
+    +isFullyFunded(in cost : Decimal) : Boolean
+  }
+
+  class CreditBudget {
+    -id : UUID
+    -limit : Decimal
+    -allocated : Decimal
+    +available() : Decimal
+    +tryChangeAllocation(in delta : Decimal) : Boolean
+  }
+
+  class PlanValidator {
+    -checkPrerequisites : Boolean
+    +validate(in plan : StudyPlan, out result : ValidationResult) : Boolean
+    +reallocate(inout budget : CreditBudget, in delta : Decimal) : Boolean
+  }
+
+  class ValidationResult {
+    -errors : List<String>
+    -warnings : List<String>
+    -missingCoreCourses : Set<Course>
+    -missingCredits : Integer
+    +addError(in message : String) : void
+    +addWarning(in message : String) : void
+    +isValid() : Boolean
+  }
+}
+
+package "Academic records and reporting" #FAF5FF {
+  class Enrollment {
+    -id : UUID
+    -semester : String
+    -confirmedAt : DateTime
+    -academicCreditsAtEnrollment : Integer
+    -costAtEnrollment : Decimal
+    +getMark() : Mark [0..1]
+    +earnedCredits(in passThreshold : Decimal) : Integer
+  }
+
+  class Mark {
+    -id : UUID
+    -value : Decimal
+    -assignedAt : DateTime
+    -updatedAt : DateTime
+    ~revise(in value : Decimal, in actor : Lecturer) : void
+    +isPassing(in passThreshold : Decimal) : Boolean
+  }
+
+  class ProgressService {
+    -passThreshold : Decimal
+    +calculate(in student : Student, in spec : Specialization) : AcademicProgress
+  }
+
+  class AcademicProgress {
+    -earnedCredits : Integer
+    -requiredCredits : Integer
+    -missingCoreCourses : Set<Course>
+    +remainingCredits() : Integer
+    +completionPercentage() : Decimal
+    +isComplete(in requireAllCoreCourses : Boolean) : Boolean
+  }
+
+  class ReportService {
+    -passThreshold : Decimal
+    +generateByField(in actor : AcademicOfficeEmployee, in field : FieldOfStudy) : AcademicReport
+    +generateBySpecialization(in actor : AcademicOfficeEmployee, in spec : Specialization) : AcademicReport
+  }
+
+  class AcademicReport {
+    -id : UUID
+    -generatedAt : DateTime
+    -grouping : String
+    -groupId : UUID
+    -studentCount : Integer
+    -averageMark : Decimal [0..1]
+    -passRate : Decimal [0..1]
+    +export(in format : String) : ByteArray
+  }
+}
+
+' Generalization: role subclasses inherit common identity and operations.
+User <|-- Student
+User <|-- Lecturer
+User <|-- AcademicOfficeEmployee
+
+' Associations: multiplicities are provided at BOTH ends.
+Student "1" -- "0..*" StudyPlan : owns
+Student "1" -- "0..*" Enrollment : academic history
+Student "1" *-- "1" CreditBudget : owns
+Lecturer "0..*" -- "0..*" Course : authorized to teach / grade
+Lecturer "1" -- "0..*" Mark : last assigned / revised by
+AcademicOfficeEmployee "1" -- "0..*" ModelStudyProgramme : created by
+FieldOfStudy "1" -- "0..*" Course : classifies
+FieldOfStudy "1" -- "0..*" Specialization : groups
+Course "0..* dependent courses" --> "0..* prerequisites" Course : requires
+CourseCatalogue "1" o-- "0..*" Course : indexes
+Specialization "0..*" -- "0..*" Course : eligible courses
+Specialization "0..*" -- "1..*" Course : core courses
+ModelStudyProgramme "0..*" --> "1" Specialization : targets
+ModelStudyProgramme "0..*" o-- "0..*" Course : includes
+StudyPlan "0..*" --> "0..1" Specialization : selected
+StudyPlan "1" *-- "0..*" PlanItem : contains
+PlanItem "0..*" --> "1" Course : selects
+PlanItem "0..1" -- "0..1" Enrollment : confirmed as
+Enrollment "0..*" --> "1" Course : enrolled in
+Enrollment "1" *-- "0..1" Mark : final result
+
+' Dependencies: transient calls / arguments / return values, not associations.
+StudyPlan ..> PlanValidator : validates / reallocates
+PlanValidator ..> CreditBudget : reads and updates
+PlanValidator ..> ValidationResult : fills out parameter
+Student ..> ProgressService : requests progress
+ProgressService ..> Enrollment : reads passed courses
+ProgressService ..> AcademicProgress : creates
+AcademicOfficeEmployee ..> ReportService : requests report
+ReportService ..> Enrollment : reads academic records
+ReportService ..> AcademicReport : creates
+
+legend bottom
+  |= Symbol |= Meaning |
+  | + / - / # / ~ | public / private / protected / package |
+  | solid line + hollow triangle | generalization (inheritance) |
+  | solid line | association; numbers at both ends are multiplicities |
+  | filled diamond | composition; exclusive ownership of a part |
+  | hollow diamond | shared aggregation; independent part lifetime |
+  | dashed arrow | dependency; temporary use |
+  | in / out / inout | input / output / input and output parameter |
+  | 0..1 / 1 / 0..* / 1..* | optional / exactly one / many / one or more |
+  All amounts use the same budget unit; academic credits are separate.
+  Role subclasses implement User.hasPermission(action).
+  Domain constraints and design assumptions: task6.md.
+endlegend
+@enduml
