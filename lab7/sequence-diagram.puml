@@ -1,0 +1,86 @@
+@startuml InPlan_Academic_Progress
+title InPlan — View progress toward a specialization
+hide footbox
+autonumber
+skinparam shadowing false
+skinparam defaultFontName SansSerif
+skinparam sequenceMessageAlign center
+
+actor "Student (via UI)" as User
+participant "student : Student" as Student
+participant "service : ProgressService" as Service
+participant "enrollment : Enrollment" as Enrollment
+participant "mark : Mark" as Mark
+participant "spec : Specialization" as Spec
+
+note over Student, Spec
+  Preconditions: the student is authenticated and views their own records.
+  The specialization is selected; passThreshold is configured.
+  Enrollment and Mark lifelines represent the current objects in the loop.
+end note
+
+User -> Student : viewProgress(spec)
+activate Student
+Student -> Service : calculate(student, spec)
+activate Service
+note right of Service
+  Initialize earnedCredits = 0 and passedCourses = {}.
+  Traverse the student's enrollments in chronological order.
+end note
+
+loop For each enrollment, earliest first
+  Service -> Enrollment : getMark()
+  Enrollment --> Service : mark [0..1]
+  alt Mark exists
+    Service -> Mark : isPassing(passThreshold)
+    Mark --> Service : passed
+    alt passed
+      Service -> Spec : accepts(enrollment.course)
+      Spec --> Service : eligible
+      opt eligible and course not in passedCourses
+        Service -> Enrollment : earnedCredits(passThreshold)
+        activate Enrollment
+        Enrollment -> Mark : isPassing(passThreshold)
+        Mark --> Enrollment : true
+        Enrollment --> Service : academicCreditsAtEnrollment
+        deactivate Enrollment
+        note right of Service
+          Add the credit snapshot to earnedCredits.
+          Add the course to passedCourses.
+          Later passes of the same course are not counted again.
+        end note
+      end
+    else Not passed
+      note right of Service : Exclude this enrollment from completed courses.
+    end
+  else No mark
+    note right of Service : Exclude this ungraded enrollment.
+  end
+end
+
+Service -> Spec : missingCoreCourses(passedCourses)
+Spec --> Service : missingCoreCourses
+create participant "progress : AcademicProgress" as Progress
+Service -> Progress : <<create>>
+note right of Progress
+  earnedCredits = accumulated credit snapshots
+  requiredCredits = spec.requiredCredits
+  missingCoreCourses = returned missing set
+  Object creation is not a declared method call.
+end note
+Service --> Student : progress
+deactivate Service
+Student --> User : progress
+deactivate Student
+
+User -> Progress : remainingCredits()
+Progress --> User : remaining credits
+User -> Progress : completionPercentage()
+Progress --> User : percentage capped at 100
+User -> Progress : isComplete(true)
+Progress --> User : complete
+note over User, Progress
+  Completion requires enough credits AND all core courses.
+  100% credits alone does not imply completion.
+end note
+@enduml
